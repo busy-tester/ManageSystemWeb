@@ -25,3 +25,14 @@ export function getUserInfo(token){
         }
     })
 }
+
+// 退出登录
+export function logout(token){
+    return request({
+        url: BASE_URL + '/api/user/logout', 
+        method: 'post',
+        headers:{
+            "Authorization":"JWT "+token  // 请求头
+        }
+    })
+}

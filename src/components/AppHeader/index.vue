@@ -32,10 +32,46 @@
 </template>
 
 <script>
+  import {logout} from '@/api/login' // 导入退出系统接口
+
   export default {
     methods: {
       handleCommand(command){
-        this.$message(`点击了${command}`)
+        switch (command) {
+          case 'edit':
+            console.log('修改密码')
+            
+            break;
+          case 'quit':
+            console.log('退出登录')
+            // 获取token
+            const token = localStorage.getItem('zz-token')
+
+            // 调用退出登录接口
+            logout(token).then(response =>{
+              const res = response.data
+              if (res.success){
+                // 退出成功，清除本地数据
+                localStorage.removeItem('zz-token')
+
+                // 回到登录页面，重新登录
+                this.$router.push('/login')
+              }else{
+                // 退出失败
+                this.$message({
+                    showClose: true, // 可以关闭
+                    message: res.message,
+                    type: 'warning'
+
+                });
+              }
+            })
+            
+            break;
+        
+          default:
+            break;
+        }
       }
     },
   }
