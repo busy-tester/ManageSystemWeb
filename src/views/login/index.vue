@@ -1,8 +1,9 @@
 <template>
     <div class="login-container">
+      <!-- :rules 绑定的规则 -->
       <el-form ref="form" :rules="rules" :model="form" label-width="80px" class="login-form">
         <h2 class="login-title">管理系统</h2>
-        <el-form-item label="用户名" prop="username">
+        <el-form-item label="账号" prop="username">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
@@ -16,6 +17,7 @@
     </div>
   </template>
     <script>
+import { login,getUserInfo } from "@/api/login";
   export default {
     data() {
       return {
@@ -26,11 +28,11 @@
         rules: {
           username: [
             {required: true, message: "用户名不能为空", trigger: 'blur'},
-            {min: 3, max: 10, message: "用户名3-5位", trigger: 'blur'}
+            {min: 3, max: 10, message: "用户名3-10位", trigger: 'blur'}
           ],
           password: [
             {required: true, message: "密码不能为空", trigger: 'blur'},
-            {min: 3, max: 10, message: "密码3-5位", trigger: 'blur'}
+            {min: 5, max: 15, message: "密码5-15位", trigger: 'blur'}
           ]
       }
       };
@@ -41,6 +43,33 @@
             // console.log(valid) 验证通过为true，有一个不通过就是false
             if (valid) {
               // 通过的逻辑
+              login(this.form.username, this.form.password).then(response => {
+                const res = response.data;
+                console.log(res)
+                if (res.success) {
+                  // 保存token
+                  localStorage.setItem("zz-token", res.data.token);
+
+                  // 获取用户信息
+                  const token = localStorage.getItem('zz-token')
+                  
+                  // 请求头携带token传给后端
+                  getUserInfo(token).then(response =>{
+                    const res = response.data;
+                    console.log(res)
+                  })
+                  
+
+                  // 前往首页
+                  this.$router.push("/");
+                }else{
+                  this.$message({
+                    message:res.msg,
+                    type:"warning"
+                  })
+                }
+              })
+              
             } else {
               console.log('验证失败');
               return false;
@@ -51,7 +80,7 @@
   };
   </script>
 
-  <style acoped>
+  <style scoped>
   .login-form {
     width: 350px;
     margin: 160px auto; /* 上下间距160px，左右自动居中*/
