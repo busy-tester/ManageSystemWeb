@@ -1,6 +1,5 @@
 import request from '@/utils/request'
-
-const BASE_URL = 'http://127.0.0.1:8081'
+import BASE_URL from '@/utils/common'
 // 导出的是普通成员函数
 
 // 登录

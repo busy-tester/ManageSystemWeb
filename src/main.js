@@ -7,6 +7,11 @@ import router from "./router";
 // 使用element-ui
 Vue.use(ElementUI);
 
+// 权限拦截，全局的
+import './premission'
+
+
+
 // 环境配置，是否为生成环境
 // false为开发环境，Vue会提供很多警告，方便调试代码
 // true为生成环境，Vue会提供很少的警告
