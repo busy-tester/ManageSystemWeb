@@ -112,7 +112,7 @@
      <!-- 分页结束 -->
 
 
-         <!-- 弹出新增窗口 
+         <!-- 新增弹出新增窗口 
         title 窗口的标题
         :visible.sync 当它true的时候，窗口会被弹出
     -->
@@ -173,15 +173,77 @@
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
         <!-- pojoForm 为el-form 的ref属性值 -->
-        <!-- <el-button type="primary" @click="addData('pojoForm')">确 定</el-button> -->
+        <el-button type="primary" @click="addData('pojoForm')">确 定</el-button>
         <!-- 当pojo.id === null时，调用新增接口addData，当不为null，表示有id，则调更新接口updateData -->
-        <el-button type="primary" @click="pojo.id === null ? addData('pojoForm'): updateData('pojoForm')">确 定</el-button>
+        <!-- <el-button type="primary" @click="pojo.id === null ? addData('pojoForm'): updateData('pojoForm')">确 定</el-button> -->
 		
 
         
       </div>
     </el-dialog>
-    <!-- 弹出窗口结束 -->
+    <!-- 新增会员弹出窗口结束 -->
+
+
+    <!-- 编辑弹出新增窗口  -->
+    <el-dialog title="编辑会员" :closeOnClickModal=false :visible.sync="dialogFormVisibleedit" width="500px">
+      <!-- 设置弹出框的样式 label-position="right" 右对齐 -->
+      <el-form
+        :rules="rules"
+        ref="pojoFormEdit"
+        label-width="100px"
+        label-position="right"
+        style="width: 400px;"
+        :model="pojoedit"
+      >
+        <el-form-item label="会员卡号"  prop="member_card">
+          <el-input v-model="pojoedit.member_card" placeholder="请输入会员卡号"></el-input>
+        </el-form-item>
+        <el-form-item label="会员姓名"  prop="member_name">
+          <el-input v-model="pojoedit.member_name" placeholder="请输入会员姓名"></el-input>
+        </el-form-item>
+        <el-form-item label="会员生日" prop="member_birthday">
+          <!-- value-format 是指定绑定值的格式 -->
+          <el-date-picker
+            style="width: 200px"
+            value-format="yyyy-MM-dd"
+            v-model="pojoedit.member_birthday"
+            type="date"
+            placeholder="会员生日"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="手机号码" prop="phone_number">
+          <el-input v-model="pojoedit.phone_number" placeholder="请输入手机号码"></el-input>
+        </el-form-item>
+        <el-form-item label="开卡金额"  prop="card_money">
+          <el-input v-model="pojoedit.card_money" placeholder="请输入开卡金额"></el-input>
+        </el-form-item>
+        <el-form-item label="可用积分" prop="Available_integral">
+          <el-input v-model="pojoedit.Available_integral" placeholder="请输入可用积分"></el-input>
+        </el-form-item>
+        <el-form-item label="支付类型" prop="pay_type">
+          <el-select v-model="pojoedit.pay_type" placeholder="支付类型" style="width: 110px">
+            <!-- 不要忘记 payTypeOptions 绑定到data中 -->
+            <el-option
+              v-for="option in payTypeOptions"
+              :key="option.pay_type"
+              :label="option.name"
+              :value="option.pay_type"
+            ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="会员地址" prop="member_address">
+          <el-input type="textarea" v-model="pojoedit.member_address" placeholder="请输入会员地址"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleedit = false">取 消</el-button>
+        <!-- pojoFormEdit 为el-form 的ref属性值 -->
+        <el-button type="primary" @click="updateData('pojoFormEdit')">确 定</el-button>
+
+        
+      </div>
+    </el-dialog>
+    <!-- 编辑会员弹出窗口结束 -->
 
     </div>
 </template>
@@ -213,9 +275,10 @@ export default{
             },
             payTypeOptions, // 这里要申明，要不然搜索框里使用的时候会报错
             dialogFormVisible: false, //控制对话框，默认不弹出
+            dialogFormVisibleedit: false, // 控制编辑对话框
             pojo: {
               // 提交的数据，不写有时候会导致输入框输入不了
-              id: null,
+              
               member_card: "",
               member_name: "",
               member_birthday: "",
@@ -225,13 +288,26 @@ export default{
               pay_type: "",
               member_address: ""
             },
+            pojoedit: {
+              // 编辑的数据，不写有时候会导致输入框输入不了
+              
+              member_card: "",
+              member_name: "",
+              member_birthday: "",
+              phone_number: "",
+              card_money: "",
+              Available_integral: "",
+              pay_type: "",
+              member_address: ""
+            },
             rules: {
               // 校验规则，blur 失去焦点的时候验证，change 输入值改变的时候验证
               member_card: [{ required: true, message: "卡号不能为空", trigger: "blur" }],
               member_name: [{ required: true, message: "姓名不能为空", trigger: "blur" }],
               pay_type: [
                 { required: true, message: "支付类型不能为空", trigger: "change" }
-              ]
+              ],
+              member_birthday:[{required: true, message: "会员生日不能为空", trigger: "change"}]
             }
           
         }
@@ -258,17 +334,17 @@ export default{
 
         },
         
-      // 打开编辑窗口
-      handleEdit(id) {
+      // 编辑提交数据
+      editData(id) {
         console.log("编辑", id);
-        this.handleAdd();  // 要打开窗口，清除数据，直接复用handleAdd就可以了
+
         // 获取token
         const token = localStorage.getItem('zz-token')
         memberApi.getById(id,token).then(response => {
           const res = response.data;
           if (res.success) {
-            this.pojo = res.data;  // 将数据赋值给pojo显示在输入框里
-            console.log(this.pojo);  
+            this.pojoedit = res.data;  // 将数据赋值给pojo显示在输入框里
+            console.log(this.pojoedit);  
           }
         });
       },
@@ -301,8 +377,10 @@ export default{
                   console.log('取消')
               })
       },
+
         // 弹出新增窗口
       handleAdd() {
+        console.log('新增')
         // this.pojo = {}
         this.dialogFormVisible = true;
         this.$nextTick(() => {
@@ -312,7 +390,6 @@ export default{
           this.$refs["pojoForm"].resetFields();
         });
         },
-
     // 提交新增数据,formName就是传过来的pojoForm
     addData(formName) {
       // console.log('数据',formName)
@@ -346,6 +423,22 @@ export default{
         }
       });
     },
+
+       // 打开编辑窗口
+       handleEdit(id) {
+        console.log("编辑", id);
+        this.dialogFormVisibleedit = true;
+        // 获取token
+        const token = localStorage.getItem('zz-token')
+        memberApi.getById(id,token).then(response => {
+          const res = response.data;
+          if (res.success) {
+            this.pojoedit = res.data;  // 将数据赋值给pojoedit显示在输入框里
+            console.log(this.pojoedit);  
+          }
+        });
+      },
+
       // 更新接口
       updateData(formName) {
           console.log("updateData");
@@ -353,12 +446,12 @@ export default{
             if (valid) {
               const token = localStorage.getItem('zz-token')
               // 提交更新
-              memberApi.update(this.pojo,token).then(response => {
+              memberApi.update(this.pojoedit,token).then(response => {
                 const res = response.data;
                 if (res.success) {
                   // 刷新列表
                   this.fetchData();
-                  this.dialogFormVisible = false; // 关闭弹窗
+                  this.dialogFormVisibleedit = false; // 关闭弹窗
                   // 提示修改成功
                   this.$message({
                     message: res.msg,
