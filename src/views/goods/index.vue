@@ -7,23 +7,13 @@
     <!-- :model="searchMap" 绑定到这个参数上 -->
     <el-form ref="searchForm" :inline="true" :model="searchMap" style="margin-top: 20px">
         <!-- 重置会看 el-form-item 组件元素的 prop 上是否指定了字段名，指定了才会重置生效 -->
-        <el-form-item prop="supplier_name">
+        <el-form-item prop="name">
           <!-- placeholder背景文案 -->
           <el-input v-model="searchMap.name" placeholder="商品名称" style="width: 200px"></el-input>
         </el-form-item>
         <el-form-item prop="code">
 
           <el-input v-model="searchMap.code"   placeholder="商品编号" style="width: 200px"></el-input>
-        </el-form-item>
-
-        <el-form-item prop="supplier">
-            <el-autocomplete
-            v-model="state4"
-            :fetch-suggestions="querySearchAsync"
-            placeholder="选择供应商"
-            @select="handleSelect"
-          ></el-autocomplete>
-
         </el-form-item>
       
   
@@ -34,6 +24,7 @@
         </el-form-item>
       </el-form>
       <!-- 搜索框结束 -->  
+
 
 
 
@@ -71,6 +62,52 @@
 
 
 
+             <!-- 弹出商品新增窗口 
+        title 窗口的标题
+        :visible.sync 当它true的时候，窗口会被弹出
+    -->
+    <!-- :rules="rules"校验，需要在校验的字段上指定prop -->
+    <!-- 这里都要绑定prop，并且在data里声明，要不然弹框里的数据不会清空或者不能输入 -->
+    <el-dialog title="添加商品" :closeOnClickModal=false :visible.sync="dialogFormVisible" width="500px">
+      <el-form
+        :rules="rules"
+        ref="pojoForm"
+        label-width="100px"
+        label-position="right"
+        style="width: 400px;"
+        :model="pojo"
+      >
+        <el-form-item label="商品名称" prop="name">
+          <el-input v-model="pojo.name" placeholder="请输入商品名称"></el-input>
+        </el-form-item>
+        <el-form-item label="商品编码" prop="code">
+          <el-input v-model="pojo.code" placeholder="请输入商品编码"></el-input>
+        </el-form-item>
+        <el-form-item label="商品规格" prop="specs">
+          <el-input v-model="pojo.specs" placeholder="请输入商品规格"></el-input>
+        </el-form-item>
+        <el-form-item label="零售价" prop="retail_price">
+          <el-input v-model="pojo.retail_price" placeholder="请输入零售价"></el-input>
+        </el-form-item>
+        <el-form-item label="进货价" prop="buying_price">
+          <el-input v-model="pojo.buying_price" placeholder="请输入进货价"></el-input>
+        </el-form-item>
+        <el-form-item label="库存数量" prop="amount">
+          <el-input v-model="pojo.amount" placeholder="请输入库存数量"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addData('pojoForm')">确 定</el-button>
+        
+      </div>
+    </el-dialog>
+    <!-- 弹出新增商品口结束 -->
+
+
+
+
      <!-- 分页 -->
      <!--
          handleSizeChange 改变每页多少条调用这个方法，会传选择的条数过去
@@ -105,14 +142,28 @@ export default{
             currenPage: 1, // 当前页码
             pageSize: 10, // 每页显示的数据条数
             total: 0,
+            dialogFormVisible: false, // 新增弹出框默认为false
+            pojo:{  // 提交的数据
+              id: null,
+              name:"",
+              code:"",
+              specs:"",
+              retail_price:"",
+              buying_price:"",
+              amount:"",
+              supplier:"",
+
+            },
+            rules: {  // 验证规则
+              name:[{required:true,message:"商品名称不能为空",trigger:'blur'}],
+              code:[{required:true,message:"商品编码不能为空",trigger:'blur'}]
+
+            },
             searchMap:{  // 条件查询绑定的字段
                 name:"",
                 code:"",
                 supplier:""
             },
-            restaurants: [],
-            state4: '',
-            timeout:  null
 
         }
     },
@@ -130,10 +181,52 @@ export default{
                 this.total = res.total  // 将接口返回的total 覆盖 data里的total
                 this.list = res.data  // 将返回数据的data赋值给list 
             })
-        },
-        handleAdd(){
+          },
+        // 弹出新增窗口
+        handleAdd() {
+        
+        // this.pojo = {}
+        this.dialogFormVisible = true;
+        this.$nextTick(() => {
+            // this.$nextTick()它是一个异步事件，当渲染结束 之后 ，它的回调函数才会被执行
+            // 弹出窗口打开之后 ，需要加载Dom, 就需要花费一点时间，我们就应该等待它加载完dom之后，再进行调用resetFields方法，重置表单和清除样式
+            this.$refs["pojoForm"].resetFields();
+        });
+      },
+        // 新增数据
+        addData(formName){
+        // console.log('数据',formName)
+            this.$refs[formName].validate(valid =>{
+            if(valid){
+                // 校验通过，提交表单
 
+                // 获取token
+                const token = localStorage.getItem('zz-token')
+                // pojo才是提交到后台的数据，不是formName
+                goodsApi.add(token,this.pojo).then(response=>{
+                const res = response.data
+                if (res.success){
+                    this.fetchData()
+                    this.dialogFormVisible = false
+
+                    // 成功弹出提示
+                    this.$message({
+                        message: res.msg,
+                        type: 'success'
+                        })
+                }else{
+                    this.$message({
+                        message: res.msg,
+                        type: 'warning'
+                        })
+                }
+                })
+            }else{
+                return false
+            }
+            })
         },
+
         // 编辑按钮
         handleEdit(id){
             console.log('编辑',id)
@@ -152,32 +245,14 @@ export default{
             this.currenPage = val;
             this.fetchData();
           },
-
-        // 从服务端获取数据
-        loadAll() {
-        
-        },
-        querySearchAsync(queryString, cb) {
-        var restaurants = this.restaurants;
-        var results = queryString ? restaurants.filter(this.createStateFilter(queryString)) : restaurants;
-
-        clearTimeout(this.timeout);
-        this.timeout = setTimeout(() => {
-          cb(results);
-        }, 3000 * Math.random());
-      },
-      createStateFilter(queryString) {
-        return (state) => {
-          return (state.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0);
-        };
-      },
-      handleSelect(item) {
-        console.log(item);
-      }
-    },
-    mounted() {
-      this.restaurants = this.loadAll();
+        // 重置功能,element ui 提供的功能
+        resetForm(formName) {
+          // 重置要看 el-form-item 组件元素的 prop 上是否指定了字段名，指定了才会重置生效
+            this.$refs[formName].resetFields();
+            this.fetchData();
+          },
     }
-    }
+  }
+
 
 </script>
