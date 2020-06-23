@@ -11,7 +11,7 @@
   <!--  下拉菜单-->
 <el-dropdown @command="handleCommand"><!--  绑定指令,在methods里定义-->
     <span class="el-dropdown-link">
-      您好，{{ }}
+      您好，{{ nick_name }}
       <i class="el-icon-arrow-down el-icon--right"></i>
     </span>
     <el-dropdown-menu slot="dropdown">
@@ -91,6 +91,8 @@
       // 在return上面进行声明自定义校验，不能以逗号结束
 
       return{
+            // 获取用户昵称
+            nick_name:localStorage.getItem('user_info') ,
             dialogFormVisible: false,  // 修改密码弹出框
             rules:{  // 校验规则
               oldPass: [
@@ -143,6 +145,7 @@
             if (res.success){
               // 退出成功，清除本地数据
               localStorage.removeItem('zz-token')
+              localStorage.removeItem('user_info')
                // 回到登录页面，重新登录
                this.$router.push('/login')
             }else{

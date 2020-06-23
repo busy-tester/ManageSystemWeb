@@ -51,13 +51,17 @@ import { login,getUserInfo } from "@/api/login";
                   // 保存token
                   localStorage.setItem("zz-token", res.data.token);
 
-                  // 获取用户信息
+                  // 获取token
                   const token = localStorage.getItem('zz-token')
                   
                   // 请求头携带token传给后端
                   getUserInfo(token).then(response =>{
                     const res = response.data;
                     console.log(res)
+
+                    // 保存用户信息
+                    localStorage.setItem("user_info", res.data.nickname);
+
                   })
                   
 
