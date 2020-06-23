@@ -6,8 +6,9 @@
         <el-form-item label="账号" prop="username">
           <el-input v-model="form.username"></el-input>
         </el-form-item>
-        <el-form-item label="密码" prop="password">
-          <el-input v-model="form.password"></el-input>
+        <el-form-item label="密码"  prop="password">
+          <!-- show-password 密码输入框 -->
+          <el-input show-password v-model="form.password"></el-input>
         </el-form-item>
 
         <el-form-item>
