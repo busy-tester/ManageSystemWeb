@@ -15,8 +15,23 @@
 
           <el-input v-model="searchMap.code"   placeholder="商品编号" style="width: 200px"></el-input>
         </el-form-item>
-      
-  
+
+      <!-- 供应商搜索框 -->
+      <el-form-item prop='supplier'>  <!-- 在el-select外面需要加上<el-form-item prop='supplier'>，要不然清空不了 -->
+        <!-- clearable 为可手动清空，options 为接口返回的数据，下面有定义和获取 -->
+        <!-- :key="item.id" 绑定一个唯一的值，id唯一，所以绑定id  :label="item.supplier_name" 选择框里看的值-->
+        <!--  :value="item.id" 传给后端的值-->
+        <el-select  v-model="searchMap.supplier" clearable placeholder="请选择供应商" >
+          <el-option
+            v-for="item in options"
+            :key="item.id"
+            :label="item.supplier_name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+         <!-- 供应商搜索框结束 -->
+
         <el-form-item>
           <el-button type="primary" @click="fetchData">查询</el-button>
           <el-button type="primary"  @click="handleAdd">新增</el-button>
@@ -96,6 +111,23 @@
           <el-input v-model="pojo.amount" placeholder="请输入库存数量"></el-input>
         </el-form-item>
 
+        
+      <!-- 供应商输入框 -->
+      <el-form-item label="供应商" prop="supplier"> <!-- prop不写则点击新增按钮，供应商里还有值 -->
+        <!-- clearable 为可手动清空，options 为接口返回的数据，下面有定义和获取 -->
+        <!-- :key="item.id" 绑定一个唯一的值，id唯一，所以绑定id  :label="item.supplier_name" 选择框里看的值-->
+        <!--  :value="item.id" 传给后端的值-->
+        <el-select  v-model="pojo.supplier" clearable placeholder="请选择供应商" >
+          <el-option
+            v-for="item in options"
+            :key="item.id"
+            :label="item.supplier_name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+         <!-- 供应商输入框结束 -->
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -106,6 +138,66 @@
     <!-- 弹出新增商品口结束 -->
 
 
+
+             <!-- 弹出商品编辑窗口 
+        title 窗口的标题
+        :visible.sync 当它true的时候，窗口会被弹出
+    -->
+    <!-- :rules="rules"校验，需要在校验的字段上指定prop -->
+    <!-- 这里都要绑定prop，并且在data里声明，要不然弹框里的数据不会清空或者不能输入 -->
+    <el-dialog title="编辑商品" :closeOnClickModal=false :visible.sync="dialogFormVisibleedit" width="500px">
+      <el-form
+        :rules="rules"
+        ref="pojoFormEdit"
+        label-width="100px"
+        label-position="right"
+        style="width: 400px;"
+        :model="pojoedit"
+      >
+        <el-form-item label="商品名称" prop="name">
+          <el-input v-model="pojoedit.name" placeholder="请输入商品名称"></el-input>
+        </el-form-item>
+        <el-form-item label="商品编码" prop="code">
+          <el-input v-model="pojoedit.code" placeholder="请输入商品编码"></el-input>
+        </el-form-item>
+        <el-form-item label="商品规格" prop="specs">
+          <el-input v-model="pojoedit.specs" placeholder="请输入商品规格"></el-input>
+        </el-form-item>
+        <el-form-item label="零售价" prop="retail_price">
+          <el-input v-model="pojoedit.retail_price" placeholder="请输入零售价"></el-input>
+        </el-form-item>
+        <el-form-item label="进货价" prop="buying_price">
+          <el-input v-model="pojoedit.buying_price" placeholder="请输入进货价"></el-input>
+        </el-form-item>
+        <el-form-item label="库存数量" prop="amount">
+          <el-input v-model="pojoedit.amount" placeholder="请输入库存数量"></el-input>
+        </el-form-item>
+
+        
+      <!-- 供应商输入框 -->
+      <el-form-item label="供应商" prop="supplier"> <!-- prop不写则点击新增按钮，供应商里还有值 -->
+        <!-- clearable 为可手动清空，options 为接口返回的数据，下面有定义和获取 -->
+        <!-- :key="item.id" 绑定一个唯一的值，id唯一，所以绑定id  :label="item.supplier_name" 选择框里看的值-->
+        <!--  :value="item.id" 传给后端的值-->
+        <el-select  v-model="pojoedit.supplier" clearable placeholder="请选择供应商" >
+          <el-option
+            v-for="item in options"
+            :key="item.id"
+            :label="item.supplier_name"
+            :value="item.id">
+          </el-option>
+        </el-select>
+      </el-form-item>
+         <!-- 供应商输入框结束 -->
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisibleedit = false">取 消</el-button>
+        <el-button type="primary" @click="updateData('pojoFormEdit')">确 定</el-button>
+        
+      </div>
+    </el-dialog>
+    <!-- 弹出编辑商品窗口口结束 -->
 
 
      <!-- 分页 -->
@@ -143,7 +235,19 @@ export default{
             pageSize: 10, // 每页显示的数据条数
             total: 0,
             dialogFormVisible: false, // 新增弹出框默认为false
+            dialogFormVisibleedit: false ,//编辑弹出框默认为false
             pojo:{  // 提交的数据
+              id: null,
+              name:"",
+              code:"",
+              specs:"",
+              retail_price:"",
+              buying_price:"",
+              amount:"",
+              supplier:"",
+
+            },
+            pojoedit:{  // 编辑的数据
               id: null,
               name:"",
               code:"",
@@ -159,10 +263,12 @@ export default{
               code:[{required:true,message:"商品编码不能为空",trigger:'blur'}]
 
             },
+            options:[], // 获取供应商数据
             searchMap:{  // 条件查询绑定的字段
                 name:"",
                 code:"",
-                supplier:""
+                supplier:"",
+  
             },
 
         }
@@ -170,6 +276,7 @@ export default{
 
     created(){  // 调接口请求数据，将调接口定义一个方法，在created里调用这个方法
         this.fetchData()
+        this.loadAllData()
     },
     methods: {
         fetchData(){  // 获取数据
@@ -182,16 +289,58 @@ export default{
                 this.list = res.data  // 将返回数据的data赋值给list 
             })
           },
+          loadAllData(){   // 获取供应商数据
+            // 获取token
+            const token = localStorage.getItem('zz-token')
+            goodsApi.getSupplier(token).then(response=>{
+              // 将接口返回的值赋给 options
+              this.options = response.data
+            })
+
+          },
         // 弹出新增窗口
         handleAdd() {
         
-        // this.pojo = {}
-        this.dialogFormVisible = true;
-        this.$nextTick(() => {
-            // this.$nextTick()它是一个异步事件，当渲染结束 之后 ，它的回调函数才会被执行
-            // 弹出窗口打开之后 ，需要加载Dom, 就需要花费一点时间，我们就应该等待它加载完dom之后，再进行调用resetFields方法，重置表单和清除样式
-            this.$refs["pojoForm"].resetFields();
-        });
+          // this.pojo = {}
+          this.dialogFormVisible = true;
+          this.$nextTick(() => {
+              // this.$nextTick()它是一个异步事件，当渲染结束 之后 ，它的回调函数才会被执行
+              // 弹出窗口打开之后 ，需要加载Dom, 就需要花费一点时间，我们就应该等待它加载完dom之后，再进行调用resetFields方法，重置表单和清除样式
+              this.$refs["pojoForm"].resetFields();
+          });
+        },
+      // 编辑提交的数据
+      updateData(formName){
+        this.$refs[formName].validate(valid =>{
+            if(valid){
+                // 校验通过，提交表单
+
+                // 获取token
+                const token = localStorage.getItem('zz-token')
+                // pojo才是提交到后台的数据，不是formName
+                goodsApi.update(token,this.pojoedit).then(response=>{
+                const res = response.data
+                if (res.success){
+                    this.fetchData()
+                    this.dialogFormVisibleedit = false
+
+                    // 成功弹出提示
+                    this.$message({
+                        message: res.msg,
+                        type: 'success'
+                        })
+                }else{
+                    this.$message({
+                        message: res.msg,
+                        type: 'warning'
+                        })
+                }
+                })
+            }else{
+                return false
+            }
+            })
+
       },
         // 新增数据
         addData(formName){
@@ -229,12 +378,45 @@ export default{
 
         // 编辑按钮
         handleEdit(id){
-            console.log('编辑',id)
+            this.dialogFormVisibleedit=true;
+            // 获取token
+            const token = localStorage.getItem('zz-token')
+            goodsApi.getById(id,token).then(response=>{
+              const res =response.data;
+              if (res.success){
+                this.pojoedit = res.data
+              }
+            })
         },
         // 删除按钮
-        handleDelete(id){
-            console.log('删除',id)
-        },
+        handleDelete(id) {
+        console.log('删除', id)
+              this.$confirm('该操作将永久性删除数据，请谨慎操作。', '提示', {
+                  confirmButtonText: '确认',
+                  cancelButtonText: '取消',
+              }).then(() => {
+                  // 确认
+                  console.log('确认')
+                  // 获取token
+                  const token = localStorage.getItem('zz-token')
+                  goodsApi.deleteById(id,token).then(response => {
+                      // console.log(response)
+                      const res = response.data
+                      // 删除成功或失败的提示信息
+                      this.$message({
+                          message: res.msg,
+                          type: res.success ? 'success': 'error'
+                      })
+                      if(res.success) {
+                          // 删除成功，刷新列表数据
+                          this.fetchData()
+                      }
+                  })
+              }).catch(() => {
+                  // 取消，不用理会
+                  console.log('取消')
+              })
+      },
         // 当每页显示条数改变后被触发，val是最新的每页显示条数
         handleSizeChange(val) {
             this.pageSize = val;

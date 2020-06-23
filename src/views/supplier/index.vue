@@ -256,7 +256,7 @@ export default{
       // 删除会员
       handleDelete(id) {
         console.log('删除', id)
-              this.$confirm('该操作将永久性删除数据，请谨慎操作。', '提示', {
+              this.$confirm('该操作将删除供应商和对应的商品数据，确认删除吗？。', '提示', {
                   confirmButtonText: '确认',
                   cancelButtonText: '取消',
               }).then(() => {
