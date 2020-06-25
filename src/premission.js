@@ -20,8 +20,10 @@ router.beforeEach((to, from, next)=>{
         if(to.path == '/login'){
             next() // 等价于 next({path: '/login'})，会自动获取到上面的路由 
         }else if(to.path == '/register'){
-            // 
-            next({path: '/register'})
+            
+            // next({path: '/register'})
+            next()
+
         }else{
             // 请求登录页面
 

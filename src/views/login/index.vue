@@ -9,10 +9,19 @@
         <el-form-item label="密码"  prop="password">
           <!-- show-password 密码输入框 -->
           <el-input show-password v-model="form.password"></el-input>
-        </el-form-item>
+        </el-form-item>  
+
+          <div class='account' >
+            <!-- :underline="false" 没有下划线 -->
+            <el-link type="info" :underline="false">没有账号?</el-link>
+            <router-link to="/register">
+              <el-link type="primary" >立即注册</el-link>
+            </router-link>
+            
+          </div>
 
         <el-form-item>
-          <el-button type="primary" @click="submitForm('form')">登录</el-button>
+          <el-button type="primary" @click="submitForm('form')" >登录</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -106,5 +115,12 @@ import { login,getUserInfo } from "@/api/login";
   .login-title {
     color: #303133;
     text-align: center;
+  }
+
+  .account{
+    padding-left: 80px;
+    margin-top: -6px;
+    margin-bottom: 13px;
+
   }
   </style> --> 

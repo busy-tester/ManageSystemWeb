@@ -10,6 +10,7 @@ import Member from '@/views/member'
 import Goods from '@/views/goods'
 import Staff from '@/views/staff'
 import Supplier from '@/views/supplier'
+import Register from '@/views/register'
 Vue.use(Router);
 
 
@@ -19,6 +20,11 @@ export default new Router({
           path: '/login',
           name: 'login', // 路由名称
           component: Login // 组件对象
+        },
+        {
+          path: '/register',
+          name: 'register',
+          component: Register
         },
         {
           path: '/',
