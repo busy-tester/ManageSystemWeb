@@ -256,7 +256,8 @@ export default{
             },
             rules: {  // 验证规则
               name:[{required:true,message:"商品名称不能为空",trigger:'blur'}],
-              code:[{required:true,message:"商品编码不能为空",trigger:'blur'}]
+              code:[{required:true,message:"商品编码不能为空",trigger:'blur'}],
+              supplier:[{required:true,message:"供应商不能为空",trigger:'blur'}]
 
             },
             options:[], // 获取供应商数据
