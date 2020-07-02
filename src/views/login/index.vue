@@ -70,12 +70,13 @@ import { login,getUserInfo } from "@/api/login";
 
                     // 保存用户信息
                     localStorage.setItem("user_info", res.data.nickname);
+                    
+                    // 前往首页
+                    this.$router.push("/");
 
                   })
                   
 
-                  // 前往首页
-                  this.$router.push("/");
                 }else{
                   this.$message({
                     message:res.msg,
@@ -109,6 +110,7 @@ import { login,getUserInfo } from "@/api/login";
     width: 100%;
     height: 100%;
     background: url("../../assets/login.png");
+    background-size: cover;  /* 让图片撑满整个屏幕 */
   }
 
   /* 标题 */

@@ -48,20 +48,16 @@
       border 表格边框，表头最上面的那个边框
       height 表格高度
     -->
-    <el-table  
-    :data="list"
-     height="380"
-     border 
-     style="width: 100%">
+    <el-table :data="list" height="480" border style="width: 100%">
       <!-- type='index'获取索引值，从1开始，label显示的标题，prop数据字段名，width列宽 -->
       <el-table-column type="index" label="序号" width="50"></el-table-column>
-      <el-table-column prop="name" label="商品名称" width='100'></el-table-column>
+      <el-table-column prop="name" label="商品名称" width='200'></el-table-column>
       <el-table-column prop="code" label="商品编码" width='200'></el-table-column>
       <el-table-column prop="specs" label="商品规格" width="200"></el-table-column>
-      <el-table-column prop="retail_price" label="零售价" width="110"></el-table-column>
-      <el-table-column prop="buying_price" label="进货价" width="110"></el-table-column>
-      <el-table-column prop="amount" label="库存数量" width="110"></el-table-column>
-      <el-table-column prop="supplier_info.name" label="供应商" width="200"></el-table-column> 
+      <el-table-column prop="retail_price" label="零售价" ></el-table-column>
+      <el-table-column prop="buying_price" label="进货价"></el-table-column>
+      <el-table-column prop="amount" label="库存数量" ></el-table-column>
+      <el-table-column prop="supplier_info.name" label="供应商" ></el-table-column> 
 
 
       <!-- 操作 -->

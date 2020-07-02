@@ -98,7 +98,7 @@ export default {
 <style scoped>
 .login-form {
   width: 350px;
-  margin: 160px auto; /* 上下间距160px，左右自动居中*/
+  margin: 100px auto; /* 上下间距160px，左右自动居中*/
   background-color: rgb(255, 255, 255, 0.8); /* 透明背景色 */
   padding: 30px;
   border-radius: 20px; /* 圆角 */
@@ -110,6 +110,7 @@ export default {
   width: 100%;
   height: 100%;
   background: url("../../assets/login.png");
+  background-size: cover;  /* 让图片撑满整个屏幕 */
 }
 
 /* 标题 */

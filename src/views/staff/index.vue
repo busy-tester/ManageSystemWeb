@@ -28,7 +28,7 @@
         border 表格边框
         height 表格高度
       -->
-      <el-table :data="list" height="380" border style="width: 100%">
+      <el-table :data="list" height="480" border style="width: 100%">
         <!-- type='index'获取索引值，从1开始，label显示的标题，prop数据字段名，width列宽 -->
         <el-table-column type="index" label="序号" width="50"></el-table-column>
         <el-table-column prop="account" label="账号" width="180"></el-table-column>

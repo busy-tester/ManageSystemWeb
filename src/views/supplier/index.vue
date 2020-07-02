@@ -35,7 +35,7 @@
     -->
     <el-table  
     :data="list"
-     height="380"
+     height="480"
      border 
      style="width: 100%">
       <!-- type='index'获取索引值，从1开始，label显示的标题，prop数据字段名，width列宽 -->
